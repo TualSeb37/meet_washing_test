@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+###> doctrine/doctrine-bundle ###
+  ## databases
+  database:
+    image: mysql:latest
+    container_name: meet_washing_db
+    restart: always
+    external_links:
+        - mysql_mysql_1:mysql
+    ports:
+      # <Port exposed> : <MySQL Port running inside container>
+      - '127.0.0.1:3307:3306'
+    #  - 127.0.0.1:3308:56040
+    environment:
+      MYSQL_DATABASE: 'meetwashing'
+      # You should definitely change the password in production
+      MYSQL_PASSWORD: 'root'
+      MYSQL_USER: 'root'
+      MYSQL_ROOT_USER: 'root'
+      MYSQL_ROOT_PASSWORD: 'root'
+      DB_HOST: 'localhost'
+    expose:
+      # Opens port 3306 on the container
+      - '3307'
+    volumes:
+      - my-db:/var/lib/mysql
+
+  # NGINX
+  nginx-php-fpm:
+    image: nginx:latest
+    restart: always
+    container_name: meet_washing_web
+    ports:
+      - 8080:80
+    volumes:
+      - ./src:/usr/share/nginx/html
+    links:
+      - php
+  #PHP
+  php:
+    image: php:8-fpm
+    restart: always
+
+
+volumes:
+###> doctrine/doctrine-bundle ###
+  my-db:
+###< doctrine/doctrine-bundle ###
